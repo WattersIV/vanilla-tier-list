@@ -329,8 +329,24 @@ function addEdcLineup() {
       return;
     }
     const element = document.createElement('li');
-    element.textContent = artist;
-    element.classList.add('justify-center', 'h-20', 'w-20', 'flex', 'items-center', 'bg-red-300');
+    const pElement = document.createElement('p');
+    pElement.textContent = artist;
+    element.appendChild(pElement);
+
+    pElement.classList.add(
+      'overflow-auto',
+      'w-full',
+      'h-full',
+      'scrollbar',
+      'scrollbar-thumb-neutral-500',
+      'scrollbar-thumb-rounded-lg',
+      'scrollbar-h-1',
+      'scrollbar-w-1',
+      'text-center',
+      'grid',
+      'items-center'
+    );
+    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300');
     element.setAttribute('draggable', 'true');
     fragment.appendChild(element);
   });
@@ -396,8 +412,24 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
   const fragment = document.createDocumentFragment();
   data.forEach(item => {
     const element = document.createElement('li');
-    element.textContent = item;
-    element.classList.add('justify-center', 'h-20', 'w-20', 'flex', 'items-center', 'bg-red-300');
+    const pElement = document.createElement('p');
+    pElement.textContent = item;
+
+    pElement.classList.add(
+      'overflow-auto',
+      'w-full',
+      'h-full',
+      'scrollbar',
+      'scrollbar-thumb-neutral-500',
+      'scrollbar-thumb-rounded-lg',
+      'scrollbar-h-1',
+      'scrollbar-w-1',
+      'text-center',
+      'grid',
+      'items-center'
+    );
+    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300');
+    element.appendChild(pElement);
     element.setAttribute('draggable', 'true');
     element.dataset.ranking = location;
     fragment.appendChild(element);
