@@ -16,7 +16,7 @@ draggableConatiners.forEach(item => {
     console.log('dragover');
     event.preventDefault();
     const draggingElement = document.querySelector('.dragging')!;
-    const closestSiblingToRight = getClosestSiblingToRight(item, event.clientX);
+    const closestSiblingToRight = getClosestSiblingToRight(item, event.clientX, event.clientY);
     const containerListElement = item.querySelector('ol')!;
     if (!closestSiblingToRight) {
       containerListElement.appendChild(draggingElement);
@@ -62,7 +62,7 @@ draggableItems.forEach(item => {
   });
 });
 
-function getClosestSiblingToRight(container: HTMLElement, mouseX: number) {
+function getClosestSiblingToRight(container: HTMLElement, mouseX: number, mouseY: number) {
   const staticDraggables = Array.from(
     container.querySelectorAll('[draggable]:not(.dragging)')
   ) as HTMLElement[];
@@ -74,12 +74,15 @@ function getClosestSiblingToRight(container: HTMLElement, mouseX: number) {
   let closestOffset = Number.NEGATIVE_INFINITY;
   let closestElement: null | HTMLElement = null;
   staticDraggables.forEach(draggableItem => {
-    const {width, x} = draggableItem.getBoundingClientRect();
+    const {width, height, x, y} = draggableItem.getBoundingClientRect();
     const itemXValue = x + width / 2;
-    const itemOffset = mouseX - itemXValue;
-    if (itemOffset < 0 && itemOffset > closestOffset) {
+    const itemYValue = y + height / 2;
+    const itemXOffset = mouseX - itemXValue;
+    const itemYOffset = Math.abs(mouseY - itemYValue);
+    const maxYOffset = height / 2;
+    if (itemXOffset < 0 && itemXOffset > closestOffset && itemYOffset <= maxYOffset) {
       closestElement = draggableItem;
-      closestOffset = itemOffset;
+      closestOffset = itemXOffset;
     }
   });
   return closestElement as HTMLElement | null;
@@ -346,7 +349,7 @@ function addEdcLineup() {
       'grid',
       'items-center'
     );
-    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300');
+    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300', 'm-0.5');
     element.setAttribute('draggable', 'true');
     fragment.appendChild(element);
   });
@@ -428,7 +431,7 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
       'grid',
       'items-center'
     );
-    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300');
+    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300', 'm-0.5');
     element.appendChild(pElement);
     element.setAttribute('draggable', 'true');
     element.dataset.ranking = location;
