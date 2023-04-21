@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+    <link rel="stylesheet" href="/src/index.css" />
+    <script defer type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="drag-container bg-violet-200 m-4">
+        <div class="inline-flex items-center text-2xl h-20 w-20">
+          S
+        </div>
+        <ol id="S" class="inline-flex flex-row h-full"></ol>
+      </div>
+      <div class="drag-container bg-violet-200 m-4">
+        <div class="inline-flex items-center text-2xl h-20 w-20">
+          A
+        </div>
+        <ol id="A" class="inline-flex flex-row h-full"></ol>
+      </div>
+      <div class="drag-container bg-violet-200 m-4 ">
+        <div class="inline-flex items-center text-2xl h-20 w-20">
+          B
+        </div>
+        <ol id="B" class="inline-flex flex-row h-full"></ol>
+      </div>
+      <div class="drag-container bg-violet-200 m-4">
+        <div class="inline-flex items-center text-2xl h-20 w-20">
+          C
+        </div>
+        <ol id="C" class="inline-flex flex-row h-full"></ol>
+      </div>
+      <div class="drag-container bg-violet-200 m-4">
+        <div class="inline-flex items-center text-2xl h-20 w-20">
+          D
+        </div>
+        <ol id="D" class="inline-flex flex-row h-full"></ol>
+      </div>
+      <div id="starting-container" class="flex flex-row drag-container flex-wrap"></div>
+    </div>
+  </body>
+</html>
