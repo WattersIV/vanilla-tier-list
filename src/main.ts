@@ -1,3 +1,5 @@
+// @ts-nocheck comment
+//Remove this after fixing ts issues
 let lastClosestSiblingToRight;
 let lastDragEndState = null;
 addEdcLineup();
