@@ -2,7 +2,11 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        tier: '100px 1fr',
+      },
+    },
   },
   plugins: [require('tailwind-scrollbar')({nocompatible: true})],
 };
