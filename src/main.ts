@@ -1,3 +1,4 @@
+let lastClosestSiblingToRight;
 let lastDragEndState = null;
 addEdcLineup();
 // seedData();
@@ -9,57 +10,12 @@ const draggableConatiners = Array.from(
 const draggableItems = Array.from(document.querySelectorAll('[draggable]')) as HTMLElement[];
 
 draggableConatiners.forEach(item => {
-  // @ts-ignore Something wrong with using DragEvent in TS for this event
-  item.addEventListener('dragover', handleDragover);
-
-  function handleDragover(event: DragEvent) {
-    console.log('dragover');
-    event.preventDefault();
-    const draggingElement = document.querySelector('.dragging')!;
-    const closestSiblingToRight = getClosestSiblingToRight(item, event.clientX, event.clientY);
-    const containerListElement = item.querySelector('ol')!;
-    if (!closestSiblingToRight) {
-      containerListElement.appendChild(draggingElement);
-    } else {
-      containerListElement.insertBefore(draggingElement, closestSiblingToRight);
-    }
-  }
+  item.addEventListener('dragover', handleDragover.bind(null, item));
 });
 
 draggableItems.forEach(item => {
-  item.addEventListener('dragstart', event => {
-    console.log('dragstart');
-    item.classList.add('dragging', 'opacity-50');
-    const path = event.composedPath();
-    for (const element of path) {
-      if (element.tagName === 'OL' && element.id !== 'starting-container') {
-        removeRanking(item.dataset.ranking, item.textContent);
-      }
-    }
-  });
-
-  draggableItems.forEach(item => {
-    item.addEventListener('dragend', e => {
-      if (lastDragEndState !== e) {
-        const path = event.composedPath();
-        let selectedRank;
-        for (const element of path) {
-          if (element.tagName === 'OL' && element.id !== 'starting-container') {
-            selectedRank = (element as HTMLOListElement).id as TierRanking;
-            item.dataset.ranking = selectedRank;
-            console.log(element);
-            insertRanking(selectedRank, item);
-            break;
-          }
-        }
-        lastDragEndState = e;
-      }
-    });
-  });
-
-  item.addEventListener('dragend', () => {
-    item.classList.remove('dragging', 'opacity-50');
-  });
+  item.addEventListener('dragstart', handleDragStart.bind(null, item));
+  item.addEventListener('dragend', handleDragEnd.bind(null, item));
 });
 
 function getClosestSiblingToRight(container: HTMLElement, mouseX: number, mouseY: number) {
@@ -85,6 +41,7 @@ function getClosestSiblingToRight(container: HTMLElement, mouseX: number, mouseY
       closestOffset = itemXOffset;
     }
   });
+  lastClosestSiblingToRight = closestElement;
   return closestElement as HTMLElement | null;
 }
 
@@ -325,7 +282,6 @@ function addEdcLineup() {
   ];
   const fragment = document.createDocumentFragment();
   const prevRankedItems = getPrevRankedItems();
-  console.log('prev ranked items', prevRankedItems);
   artists.forEach(artist => {
     const isAlreadyRanked = prevRankedItems.includes(artist);
     if (isAlreadyRanked) {
@@ -337,11 +293,12 @@ function addEdcLineup() {
     element.appendChild(pElement);
 
     pElement.classList.add(
-      'overflow-auto',
+      'overflow-hidden',
+      'hover:overflow-auto',
       'w-full',
       'h-full',
       'scrollbar',
-      'scrollbar-thumb-neutral-500',
+      'scrollbar-thumb-neutral-400',
       'scrollbar-thumb-rounded-lg',
       'scrollbar-h-1',
       'scrollbar-w-1',
@@ -349,7 +306,15 @@ function addEdcLineup() {
       'grid',
       'items-center'
     );
-    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300', 'm-0.5');
+    element.classList.add(
+      'h-24',
+      'w-24',
+      'flex',
+      'bg-neutral-300',
+      'border-solid',
+      'border-neutral-700',
+      'border-2'
+    );
     element.setAttribute('draggable', 'true');
     fragment.appendChild(element);
   });
@@ -374,7 +339,6 @@ type RankingsData = {
 };
 
 function addPrevRankings() {
-  console.log('add prev rankings');
   const prevRankings = getSavedRankings();
 
   for (const ranking in prevRankings) {
@@ -383,7 +347,6 @@ function addPrevRankings() {
 }
 
 function getSavedRankings() {
-  console.log('get saved rankings');
   const prevRankings = localStorage.getItem('rankings');
   if (prevRankings === null) {
     return {
@@ -398,20 +361,22 @@ function getSavedRankings() {
 }
 
 function saveRankings(data: RankingsData) {
-  console.log('save ranking');
   localStorage.setItem('rankings', JSON.stringify(data));
   return;
 }
 
 function insertRanking(location: TierRanking, element: HTMLElement) {
-  console.log('insert ranking');
   const rankings = getSavedRankings();
-  rankings[location].unshift(element.textContent);
+  if (lastClosestSiblingToRight) {
+    const position = rankings[location].indexOf(lastClosestSiblingToRight.textContent);
+    rankings[location].splice(position, 0, element.textContent);
+  } else {
+    rankings[location].push(element.textContent);
+  }
   saveRankings(rankings);
 }
 
 function insertSavedRankings(location: TierRanking, data: string[]) {
-  console.log('insert saved rankings');
   const fragment = document.createDocumentFragment();
   data.forEach(item => {
     const element = document.createElement('li');
@@ -419,11 +384,12 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
     pElement.textContent = item;
 
     pElement.classList.add(
-      'overflow-auto',
+      'overflow-hidden',
+      'hover:overflow-auto',
       'w-full',
       'h-full',
       'scrollbar',
-      'scrollbar-thumb-neutral-500',
+      'scrollbar-thumb-neutral-400',
       'scrollbar-thumb-rounded-lg',
       'scrollbar-h-1',
       'scrollbar-w-1',
@@ -431,7 +397,15 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
       'grid',
       'items-center'
     );
-    element.classList.add('h-24', 'w-24', 'flex', 'bg-red-300', 'm-0.5');
+    element.classList.add(
+      'h-24',
+      'w-24',
+      'flex',
+      'bg-neutral-300',
+      'border-solid',
+      'border-neutral-600',
+      'border-2'
+    );
     element.appendChild(pElement);
     element.setAttribute('draggable', 'true');
     element.dataset.ranking = location;
@@ -441,7 +415,6 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
 }
 
 function removeRanking(location: TierRanking, item: string) {
-  console.log('remove ranking');
   const rankings = getSavedRankings() as RankingsData;
   const index = rankings[location].indexOf(item);
   if (index !== -1) {
@@ -452,7 +425,6 @@ function removeRanking(location: TierRanking, item: string) {
 }
 
 function seedData() {
-  console.log('seed data');
   const artists = [
     '12th Planet',
     '8Kays',
@@ -707,12 +679,57 @@ function seedData() {
   localStorage.setItem('rankings', stringifiedObj);
 }
 
-// function debounce(func: Function, waitTime: number) {
-//   let timeoutId = 0;
-//   return function() {
-//     clearTimeout(timeoutId);
-//     timeoutId = setTimeout(() => {
-//       func.call(null, ...arguments);
-//     }, waitTime);
-//   };
-// }
+function throttle(func, delay) {
+  let lastTime = 0;
+  return function() {
+    const currentTime = new Date().getTime();
+    if (currentTime - lastTime >= delay) {
+      func.apply(null, arguments);
+      lastTime = currentTime;
+    }
+  };
+}
+
+function handleDragover(item: HTMLElement, event: DragEvent) {
+  event.preventDefault();
+  const draggingElement = document.querySelector('.dragging')!;
+  const closestSiblingToRight = getClosestSiblingToRight(item, event.clientX, event.clientY);
+  const containerListElement = item.querySelector('ol')!;
+  if (!closestSiblingToRight) {
+    containerListElement.appendChild(draggingElement);
+  } else {
+    containerListElement.insertBefore(draggingElement, closestSiblingToRight);
+  }
+}
+
+function handleDragStart(item: HTMLElement, event: DragEvent) {
+  item.classList.add('dragging', 'opacity-50');
+  const path = event.composedPath();
+  for (const element of path) {
+    if (element.tagName === 'OL' && element.id !== 'starting-container') {
+      removeRanking(item.dataset.ranking, item.textContent);
+    }
+  }
+}
+
+function handleDragEnd(item: HTMLElement, event: DragEvent) {
+  item.classList.remove('dragging', 'opacity-50');
+  if (lastDragEndState !== event) {
+    const path = event.composedPath();
+    let selectedRank;
+    for (const element of path) {
+      if (element.tagName === 'OL' && element.id !== 'starting-container') {
+        selectedRank = (element as HTMLOListElement).id as TierRanking;
+        item.dataset.ranking = selectedRank;
+        insertRanking(selectedRank, item);
+        break;
+      }
+    }
+    lastDragEndState = event;
+  }
+}
+
+function shouldScroll(currentY: number) {
+  const quarterOfScreen = window.innerHeight / 3;
+  return currentY <= quarterOfScreen || currentY >= quarterOfScreen * 3;
+}
