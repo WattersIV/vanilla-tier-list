@@ -728,8 +728,3 @@ function handleDragEnd(item: HTMLElement, event: DragEvent) {
     lastDragEndState = event;
   }
 }
-
-function shouldScroll(currentY: number) {
-  const quarterOfScreen = window.innerHeight / 3;
-  return currentY <= quarterOfScreen || currentY >= quarterOfScreen * 3;
-}
