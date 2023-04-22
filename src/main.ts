@@ -333,7 +333,7 @@ function getPrevRankedItems() {
   return rankedItems;
 }
 
-type TierRanking = 'S' | 'A' | 'B' | 'C' | 'D';
+type TierRanking = 'S' | 'A' | 'B' | 'C' | 'F' | 'Dont Know';
 type RankingsData = {
   [key: TierRanking[number]]: string[] | [];
 };
@@ -354,7 +354,8 @@ function getSavedRankings() {
       A: [],
       B: [],
       C: [],
-      D: [],
+      F: [],
+      'Dont Know': [],
     };
   }
   return JSON.parse(prevRankings) as RankingsData;
@@ -571,8 +572,7 @@ function seedData() {
     'Malaa B2B Wax Motif',
     'Marc V',
     'Marshmello',
-    'Marshmello B2B',
-    'Svdden Death',
+    'Marshmello B2B Svdden Death',
     'Marten Hørger',
     'Martin Garrix',
     'The Martinez Brothers',
