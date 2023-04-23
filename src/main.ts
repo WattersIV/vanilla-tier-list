@@ -311,7 +311,7 @@ function addEdcLineup() {
       'h-24',
       'w-24',
       'flex',
-      'bg-neutral-300',
+      'bg-neutral-300/50',
       'border-solid',
       'border-neutral-700',
       'border-2'
@@ -403,7 +403,7 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
       'h-24',
       'w-24',
       'flex',
-      'bg-neutral-300',
+      'bg-neutral-300/50',
       'border-solid',
       'border-neutral-600',
       'border-2'
