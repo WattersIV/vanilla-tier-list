@@ -397,6 +397,33 @@ function getClosestSiblingToRight(container: HTMLElement, mouseX: number, mouseY
   return closestElement as HTMLElement | null;
 }
 
+function getClosestSiblingToLeft(container: HTMLElement, mouseX: number, mouseY: number) {
+  const staticDraggables = Array.from(
+    container.querySelectorAll('[draggable]:not(.dragging)')
+  ) as HTMLElement[];
+
+  if (!staticDraggables.length) {
+    return null;
+  }
+
+  let closestOffset = Number.POSITIVE_INFINITY;
+  let closestElement: null | HTMLElement = null;
+  staticDraggables.forEach(draggableItem => {
+    const {width, height, x, y} = draggableItem.getBoundingClientRect();
+    const itemXValue = x + width / 2;
+    const itemYValue = y + height / 2;
+    const itemXOffset = mouseX - itemXValue;
+    const itemYOffset = Math.abs(mouseY - itemYValue);
+    const maxYOffset = height / 2;
+    if (itemXOffset > 0 && itemXOffset < closestOffset && itemYOffset <= maxYOffset) {
+      closestElement = draggableItem;
+      closestOffset = itemXOffset;
+    }
+  });
+  lastClosestSiblingToRight = closestElement;
+  return closestElement as HTMLElement | null;
+}
+
 function addEdcLineup() {
   const fragment = document.createDocumentFragment();
   const prevRankedItems = getPrevRankedItems();
@@ -613,10 +640,14 @@ function handleDragover(item: HTMLElement, event: DragEvent) {
   const draggingElement = document.querySelector('.dragging')!;
   const closestSiblingToRight = getClosestSiblingToRight(item, event.clientX, event.clientY);
   const containerListElement = item.querySelector('ol')!;
-  if (!closestSiblingToRight) {
-    containerListElement.appendChild(draggingElement);
-  } else {
-    containerListElement.insertBefore(draggingElement, closestSiblingToRight);
+
+  if (event.target.textContent !== draggingElement.textContent) {
+    if (!closestSiblingToRight) {
+      const closestSiblingToLeft = getClosestSiblingToLeft(item, event.clientX, event.clientY);
+      closestSiblingToLeft?.after(draggingElement);
+    } else {
+      containerListElement.insertBefore(draggingElement, closestSiblingToRight);
+    }
   }
 }
 
