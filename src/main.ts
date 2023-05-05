@@ -436,7 +436,8 @@ function addEdcLineup() {
     const element = document.createElement('li');
     const tag = document.createElement('div');
     const tagColor = genreTagMap.get(genre);
-    tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]');
+    tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
+    tag.dataset.tooltip = genre;
     const pElement = document.createElement('p');
     pElement.textContent = artist;
     element.appendChild(pElement);
@@ -558,7 +559,8 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
     pElement.textContent = item;
 
     const tagColor = genreTagMap.get(genre);
-    tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]');
+    tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
+    tag.dataset.tooltip = genre;
     pElement.classList.add(
       'overflow-hidden',
       'hover:overflow-auto',

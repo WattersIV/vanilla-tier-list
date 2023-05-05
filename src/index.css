@@ -13,6 +13,40 @@
     top: 0;
     left: 0;
   }
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip:after {
+    position: absolute;
+    visibility: hidden;
+
+    bottom: 100%;
+    left: 50%;
+
+    opacity: 0;
+    transition: 0.5s opacity;
+    background: #6b7280; /* gray 500 */
+    color: white;
+    padding: 10px;
+    content: attr(data-tooltip);
+    border-radius: 8px;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    font-size: 85%;
+    text-align: left;
+    box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.75);
+    width: max-content;
+    max-width: 15rem;
+    bottom: 25px;
+    left: 47px; /* Half of card width */
+  }
+
+  .tooltip:hover:after {
+    visibility: visible;
+    opacity: 1;
+  }
+
   .ribbon {
     position: relative;
     margin: 0 auto 20px;
