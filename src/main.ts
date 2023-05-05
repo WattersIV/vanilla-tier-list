@@ -641,14 +641,16 @@ function handleDragover(item: HTMLElement, event: DragEvent) {
   event.preventDefault();
   const draggingElement = document.querySelector('.dragging')!;
   const closestSiblingToRight = getClosestSiblingToRight(item, event.clientX, event.clientY);
+  const closestSiblingToLeft = getClosestSiblingToLeft(item, event.clientX, event.clientY);
   const containerListElement = item.querySelector('ol')!;
 
   if (event.target.textContent !== draggingElement.textContent) {
-    if (!closestSiblingToRight) {
-      const closestSiblingToLeft = getClosestSiblingToLeft(item, event.clientX, event.clientY);
+    if (closestSiblingToLeft) {
       closestSiblingToLeft?.after(draggingElement);
-    } else {
+    } else if (closestSiblingToRight) {
       containerListElement.insertBefore(draggingElement, closestSiblingToRight);
+    } else {
+      containerListElement.appendChild(draggingElement);
     }
   }
 }
