@@ -4,7 +4,6 @@
 
 @layer utilities {
   .tag {
-    border-bottom: 30px solid transparent;
     border-right: 30px solid transparent;
     background-color: transparent;
     height: 0px;
@@ -19,12 +18,12 @@
 
   .tooltip:after {
     position: absolute;
-    visibility: hidden;
+    visibility: var(--after-visibility);
 
     bottom: 100%;
     left: 50%;
 
-    opacity: 0;
+    opacity: var(--after-opacity);
     transition: 0.5s opacity;
     background: #6b7280; /* gray 500 */
     color: white;
@@ -42,10 +41,10 @@
     left: 47px; /* Half of card width */
   }
 
-  .tooltip:hover:after {
+  /* .tooltip:hover:after {
     visibility: visible;
     opacity: 1;
-  }
+  } */
 
   .ribbon {
     position: relative;

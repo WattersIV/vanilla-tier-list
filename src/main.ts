@@ -434,6 +434,10 @@ function addEdcLineup() {
     const tagColor = genreTagMap.get(genre) ?? '';
     tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
     tag.dataset.tooltip = genre;
+    tag.style.setProperty('--after-visibilty', 'hidden');
+    tag.style.setProperty('--after-opacity', '0');
+    tag.addEventListener('mousemove', handleTagMouseMove.bind(null, tag));
+    tag.addEventListener('mouseleave', handleTagMouseLeave.bind(null, tag));
     const pElement = document.createElement('p');
     pElement.textContent = artist;
     element.appendChild(pElement);
@@ -559,6 +563,10 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
     const tagColor = genreTagMap.get(genre) ?? '';
     tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
     tag.dataset.tooltip = genre;
+    tag.style.setProperty('--after-visibilty', 'hidden');
+    tag.style.setProperty('--after-opacity', '0');
+    tag.addEventListener('mousemove', handleTagMouseMove.bind(null, tag));
+    tag.addEventListener('mouseleave', handleTagMouseLeave.bind(null, tag));
     pElement.classList.add(
       'overflow-hidden',
       'hover:overflow-auto',
@@ -661,4 +669,21 @@ function handleDragEnd(item: HTMLElement, event: DragEvent) {
     }
     lastDragEndState = event;
   }
+}
+
+function handleTagMouseMove(item: HTMLElement, event: MouseEvent) {
+  const mouseX = event.offsetX;
+  const mouseY = event.offsetY;
+  if (Math.abs(mouseY) >= Math.abs(mouseX)) {
+    item.style.setProperty('--after-visibilty', 'visible');
+    item.style.setProperty('--after-opacity', '1');
+  } else {
+    item.style.setProperty('--after-visibilty', 'hidden');
+    item.style.setProperty('--after-opacity', '0');
+  }
+}
+
+function handleTagMouseLeave(item: HTMLElement) {
+  item.style.setProperty('--after-visibilty', 'hidden');
+  item.style.setProperty('--after-opacity', '0');
 }
