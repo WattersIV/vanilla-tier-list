@@ -1,8 +1,6 @@
-// @ts-nocheck comment
-//Remove this after fixing ts issues
-let lastClosestSiblingToRight;
-let lastDragEndState = null;
-const artists: ArtistData = {
+let lastClosestSiblingToRight: null | HTMLElement = null;
+let lastDragEndState: null | DragEvent = null;
+const artists: Record<string, ArtistData> = {
   '12th Planet': {genre: 'Bass'},
   '8Kays': {genre: 'House'},
   '999999999': {genre: 'Techno'},
@@ -353,7 +351,6 @@ const genreTagMap = new Map([
   ['Other', 'border-t-slate-950'],
 ]);
 addEdcLineup();
-// seedData();
 addPrevRankings();
 
 const draggableConatiners = Array.from(
@@ -420,7 +417,6 @@ function getClosestSiblingToLeft(container: HTMLElement, mouseX: number, mouseY:
       closestOffset = itemXOffset;
     }
   });
-  lastClosestSiblingToRight = closestElement;
   return closestElement as HTMLElement | null;
 }
 
@@ -435,7 +431,7 @@ function addEdcLineup() {
     }
     const element = document.createElement('li');
     const tag = document.createElement('div');
-    const tagColor = genreTagMap.get(genre);
+    const tagColor = genreTagMap.get(genre) ?? '';
     tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
     tag.dataset.tooltip = genre;
     const pElement = document.createElement('p');
@@ -488,7 +484,7 @@ function getPrevRankedItems() {
 
 type TierRanking = 'S' | 'A' | 'B' | 'C' | 'F' | 'Dont Know';
 type RankingsData = {
-  [key: TierRanking[number]]: string[] | [];
+  [key: TierRanking[number]]: string[];
 };
 const genres = [
   'Bass',
@@ -505,9 +501,7 @@ const genres = [
 ] as const;
 type Genre = typeof genres[number];
 type ArtistData = {
-  string: {
-    genre: Genre;
-  };
+  genre: Genre;
 };
 
 function addPrevRankings() {
@@ -540,12 +534,16 @@ function saveRankings(data: RankingsData) {
 
 function insertRanking(location: TierRanking, element: HTMLElement) {
   const rankings = getSavedRankings();
+  console.log('lastClosestSiblingToRight', lastClosestSiblingToRight);
   if (lastClosestSiblingToRight) {
-    const position = rankings[location].indexOf(lastClosestSiblingToRight.textContent);
-    rankings[location].splice(position, 0, element.textContent);
+    const position = rankings[location].indexOf(lastClosestSiblingToRight.textContent!);
+    console.log('splice at', position);
+    rankings[location].splice(position, 0, element.textContent!);
   } else {
-    rankings[location].push(element.textContent);
+    console.log('push');
+    rankings[location].push(element.textContent!);
   }
+  console.log('saving', rankings);
   saveRankings(rankings);
 }
 
@@ -558,7 +556,7 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
     const pElement = document.createElement('p');
     pElement.textContent = item;
 
-    const tagColor = genreTagMap.get(genre);
+    const tagColor = genreTagMap.get(genre) ?? '';
     tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
     tag.dataset.tooltip = genre;
     pElement.classList.add(
@@ -605,28 +603,7 @@ function removeRanking(location: TierRanking, item: string) {
   return;
 }
 
-function seedData() {
-  const dataObj = {S: [], A: [], B: [], C: [], D: []};
-  artists.forEach(artist => {
-    const randomNum = Math.random();
-    if (randomNum > 0.8) {
-      dataObj['S'].push(artist);
-    } else if (randomNum > 0.6) {
-      dataObj['A'].push(artist);
-    } else if (randomNum > 0.4) {
-      dataObj['B'].push(artist);
-    } else if (randomNum > 0.2) {
-      dataObj['C'].push(artist);
-    } else {
-      dataObj['D'].push(artist);
-    }
-  });
-
-  const stringifiedObj = JSON.stringify(dataObj);
-  localStorage.setItem('rankings', stringifiedObj);
-}
-
-function throttle(func, delay) {
+function throttle(func: Function, delay: number) {
   let lastTime = 0;
   return function() {
     const currentTime = new Date().getTime();
@@ -644,7 +621,7 @@ function handleDragover(item: HTMLElement, event: DragEvent) {
   const closestSiblingToLeft = getClosestSiblingToLeft(item, event.clientX, event.clientY);
   const containerListElement = item.querySelector('ol')!;
 
-  if (event.target.textContent !== draggingElement.textContent) {
+  if ((event.target as HTMLElement).textContent !== draggingElement.textContent) {
     if (closestSiblingToLeft) {
       closestSiblingToLeft?.after(draggingElement);
     } else if (closestSiblingToRight) {
@@ -657,10 +634,14 @@ function handleDragover(item: HTMLElement, event: DragEvent) {
 
 function handleDragStart(item: HTMLElement, event: DragEvent) {
   item.classList.add('dragging', 'opacity-50');
-  const path = event.composedPath();
+  const path = event.composedPath() as HTMLElement[];
   for (const element of path) {
     if (element.tagName === 'OL' && element.id !== 'starting-container') {
-      removeRanking(item.dataset.ranking, item.textContent);
+      if (item.dataset.ranking) {
+        removeRanking(item.dataset.ranking as TierRanking, item.textContent!);
+      } else {
+        console.error('There is no ranking on this Element', item);
+      }
     }
   }
 }
@@ -668,7 +649,7 @@ function handleDragStart(item: HTMLElement, event: DragEvent) {
 function handleDragEnd(item: HTMLElement, event: DragEvent) {
   item.classList.remove('dragging', 'opacity-50');
   if (lastDragEndState !== event) {
-    const path = event.composedPath();
+    const path = event.composedPath() as HTMLElement[];
     let selectedRank;
     for (const element of path) {
       if (element.tagName === 'OL' && element.id !== 'starting-container') {
