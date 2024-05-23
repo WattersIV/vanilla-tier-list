@@ -19,6 +19,7 @@
   .tooltip:after {
     position: absolute;
     visibility: var(--after-visibility);
+    pointer-events: none;
 
     bottom: 100%;
     left: 50%;

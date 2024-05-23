@@ -1,341 +1,68 @@
 let lastClosestSiblingToRight: null | HTMLElement = null;
 let lastDragEndState: null | DragEvent = null;
 const artists: Record<string, ArtistData> = {
-  '12th Planet': {genre: 'Bass'},
-  '8Kays': {genre: 'House'},
-  '999999999': {genre: 'Techno'},
-  'A Hundred Drums': {genre: 'Bass'},
-  Abana: {genre: 'House'},
-  'Above & Beyond': {genre: 'Trance'},
-  ACRAZE: {genre: 'House'},
-  'ACRAZE B2B Noizu': {genre: 'House'},
-  Adrenalize: {genre: 'Hardstyle'},
-  'Afrojack (Sunrise Set)': {genre: 'House'},
-  'AK Sports': {genre: 'Drum & Bass'},
-  'Alison Wonderland': {genre: 'Trap'},
-  Alok: {genre: 'House'},
-  'Anabel Englund': {genre: 'House'},
-  Anden: {genre: 'House'},
-  'Andy C': {genre: 'Drum & Bass'},
-  'Armin van Buuren': {genre: 'Trance'},
-  ARMNHMR: {genre: 'Future Bass'},
-  ARTBAT: {genre: 'Techno'},
-  atDusk: {genre: 'Techno'},
-  Audiofreq: {genre: 'Hardstyle'},
-  Azzecca: {genre: 'House'},
-  Baggi: {genre: 'House'},
-  'Barely Alive': {genre: 'Bass'},
-  'Ben Nicky presents Emotional Havoc': {genre: 'Trance'},
-  'Ben Nicky presents Xtreme B2B Sub Zero Project': {genre: 'Hardstyle'},
-  'Ben UFO': {genre: 'Techno'},
-  'Bensley B2B Justin Hawkes': {genre: 'Drum & Bass'},
-  'Billy Gillies': {genre: 'Trance'},
-  'Biscits B2B Martin Ikin': {genre: 'House'},
-  'Black Tiger Sex Machine': {genre: 'House'},
-  Blanke: {genre: 'Bass'},
-  Blastoyz: {genre: 'Psytrance'},
-  'Bleu Clair': {genre: 'House'},
-  'Boogie T': {genre: 'Bass'},
-  'Borgore B2B Level Up': {genre: 'Bass'},
-  'Boris Brejcha': {genre: 'Techno'},
-  'Born Dirty': {genre: 'House'},
-  'Brennan Heart': {genre: 'Hardstyle'},
-  'Camden Cox': {genre: 'House'},
-  Capozzi: {genre: 'House'},
-  Carola: {genre: 'Techno'},
-  'Champagne Drip': {genre: 'Bass'},
-  Chaney: {genre: 'House'},
-  'Chris Lake': {genre: 'House'},
-  'Chris Lorenzo': {genre: 'House'},
-  'CID B2B Sage Armstrong': {genre: 'House'},
-  CID: {genre: 'House'},
-  Cloverdale: {genre: 'House'},
-  'Code Black': {genre: 'Hardstyle'},
-  Coone: {genre: 'Hardstyle'},
-  'Cosmic Gate': {genre: 'Trance'},
-  'D-Sturb': {genre: 'Hardstyle'},
-  'Da Tweekaz': {genre: 'Hardstyle'},
-  'Danny Daze': {genre: 'Techno'},
-  'Darren Styles': {genre: 'Hardcore'},
-  'David Guetta': {genre: 'House'},
-  'David Morales': {genre: 'House'},
-  'Deadly Guns': {genre: 'Hardcore'},
-  'Deeper Purpose': {genre: 'House'},
-  'Dennis Ferrer': {genre: 'House'},
-  Deorro: {genre: 'House'},
-  Dimension: {genre: 'Drum & Bass'},
-  'Dionysus & Yosuf present: Bigger Stronger Faster': {genre: 'Hardstyle'},
-  'Dirt Monkey': {genre: 'Bass'},
-  'Disco Lines': {genre: 'House'},
-  'DJ AniMe': {genre: 'Hardcore'},
-  'DJ Isaac': {genre: 'Hardstyle'},
-  'DJ Minx': {genre: 'House'},
-  'Dom Dolla': {genre: 'House'},
-  Dombresky: {genre: 'House'},
-  'Dr Phunk': {genre: 'Hardstyle'},
-  'Duke Dumont': {genre: 'House'},
-  'Dustin Husain': {genre: 'Trance'},
-  'Eli Brown': {genre: 'House'},
-  Eliminate: {genre: 'Bass'},
-  'Ellen Allien': {genre: 'Techno'},
-  Enamour: {genre: 'House'},
-  Eptic: {genre: 'Bass'},
-  'Excision B2B Dion Timmer': {genre: 'Bass'},
-  Excision: {genre: 'Bass'},
-  'Fallen B2B Richter with MC Dino': {genre: 'Drum & Bass'},
-  Fallon: {genre: 'House'},
-  'Ferreck Dawn': {genre: 'House'},
-  'Ferry Corsten': {genre: 'Trance'},
-  Fisher: {genre: 'House'},
-  'Frame (Declan James & Decoder)': {genre: 'House'},
-  'Franky Wah': {genre: 'House'},
-  'Fred Everything': {genre: 'House'},
-  Friction: {genre: 'Drum & Bass'},
-  FrostTop: {genre: 'Trap'},
-  FuntCase: {genre: 'Bass'},
-  'Fury B2B Nightstalker': {genre: 'Drum & Bass'},
-  Galantis: {genre: 'House'},
-  'Gammer B2B Tweekacore': {genre: 'Hardcore'},
-  'Gareth Emery': {genre: 'Trance'},
-  'Gentlemens Club': {genre: 'Bass'},
-  'Giuseppe Ottaviani': {genre: 'Trance'},
-  Goodboys: {genre: 'Other'},
-  GRiZ: {genre: 'Other'},
-  Griztronics: {genre: 'Bass'},
-  Habstrakt: {genre: 'House'},
-  HANA: {genre: 'Other'},
-  'Hannah Wants': {genre: 'House'},
-  'Hint Of Lavender': {genre: 'House'},
-  'HOL!': {genre: 'Bass'},
-  'Hot Since 82': {genre: 'House'},
-  Hugel: {genre: 'House'},
-  HVDES: {genre: 'Bass'},
-  'I Hate Models': {genre: 'Techno'},
-  IMANU: {genre: 'Drum & Bass'},
-  'J. Worra': {genre: 'House'},
-  Jaded: {genre: 'House'},
-  'James Hype': {genre: 'House'},
-  jamesjamesjames: {genre: 'House'},
-  'Jeff Mills': {genre: 'Techno'},
-  'Jerome Isma-Ae': {genre: 'House'},
-  'John Bryars': {genre: 'House'},
-  Jorza: {genre: 'Trance'},
-  Joshwa: {genre: 'House'},
-  JSTJR: {genre: 'Trap'},
-  Kaivon: {genre: 'Future Bass'},
-  'Kaleena Zanders': {genre: 'House'},
-  'Kaskade Redux': {genre: 'House'},
-  Kaytranada: {genre: 'House'},
-  KETTAMA: {genre: 'House'},
-  'Kill Script': {genre: 'Techno'},
-  Korolova: {
-    genre: 'Techno',
-  },
-  Kream: {
-    genre: 'House',
-  },
-  'Lady Faith': {
-    genre: 'Hardstyle',
-  },
-  'Lady Sinclair': {
-    genre: 'House',
-  },
-  'Lane 8': {
-    genre: 'House',
-  },
-  'Layla Benitez': {
-    genre: 'House',
-  },
-  'Le Youth': {
-    genre: 'House',
-  },
-  'Lenny Dee': {
-    genre: 'Techno',
-  },
-  Levenkhan: {
-    genre: 'House',
-  },
-  'Lil Texas': {
-    genre: 'Hardcore',
-  },
-  'Loco Dice B2B Fisher': {
-    genre: 'House',
-  },
-  'Loud Luxury': {
-    genre: 'House',
-  },
-  'Louie Vega': {
-    genre: 'House',
-  },
-  'Lovefingers + Heidi Lawden': {
-    genre: 'House',
-  },
-  'Maarten de Jong': {
-    genre: 'Trance',
-  },
-  'Malaa B2B Wax Motif': {
-    genre: 'House',
-  },
-  'Marc V': {
-    genre: 'Trance',
-  },
-  Marshmello: {
-    genre: 'Future Bass',
-  },
-  'Marshmello B2B Svdden Death': {
-    genre: 'Bass',
-  },
-  'Marten Hørger': {
-    genre: 'House',
-  },
-  'Martin Garrix': {
-    genre: 'House',
-  },
-  'The Martinez Brothers': {
-    genre: 'House',
-  },
-  Matroda: {
-    genre: 'House',
-  },
-  'Matt Fax': {
-    genre: 'House',
-  },
-  'Mau P': {
-    genre: 'House',
-  },
-  Meduza: {
-    genre: 'House',
-  },
-  Memba: {
-    genre: 'Other',
-  },
-  'Metrik B2B Grafix': {
-    genre: 'Drum & Bass',
-  },
-  Miane: {
-    genre: 'House',
-  },
-  'Michael Bibi': {
-    genre: 'House',
-  },
-  'Midnight Tyrannosaurus': {
-    genre: 'Bass',
-  },
-  'Mike Dunn': {
-    genre: 'House',
-  },
-  'MISS DRE': {
-    genre: 'House',
-  },
-  Mochakk: {
-    genre: 'House',
-  },
-  Modapit: {
-    genre: 'Techno',
-  },
-  'Moody Good (Throwback Set)': {
-    genre: 'Bass',
-  },
-  MORTEN: {
-    genre: 'House',
-  },
-  Mrotek: {
-    genre: 'Hardstyle',
-  },
-  'Ms. Mada B2B Bakke': {
-    genre: 'House',
-  },
-  Nala: {
-    genre: 'House',
-  },
-  Netsky: {
-    genre: 'Drum & Bass',
-  },
-  Noizu: {
-    genre: 'House',
-  },
-  Nostalgix: {
-    genre: 'House',
-  },
-  'Odd Mob': {
-    genre: 'House',
-  },
-  'Omar Santana': {
-    genre: 'Hardcore',
-  },
-  'Paco Osuna': {
-    genre: 'Techno',
-  },
-  'Patrick Topping': {
-    genre: 'House',
-  },
-  'Paul Denton': {
-    genre: 'Trance',
-  },
-  'Pauline Herr': {
-    genre: 'Future Bass',
-  },
-  Peekaboo: {
-    genre: 'Bass',
-  },
-  'Pretty Pink': {
-    genre: 'House',
-  },
-  'Ray Volpe': {
-    genre: 'Bass',
-  },
-  Reaper: {genre: 'Drum & Bass'},
-  Rebelion: {genre: 'Hardstyle'},
-  'Reinier Zonneveld (Live)': {genre: 'Techno'},
-  'Riot Ten B2B Jessica Audiffred': {genre: 'Bass'},
-  'Rob Gee 30 Years': {genre: 'Hardcore'},
-  'Said The Sky': {genre: 'Future Bass'},
-  salute: {genre: 'House'},
-  'San Pacho': {genre: 'House'},
-  SAYMYNAME: {genre: 'Trap'},
-  Shei: {genre: 'Hardstyle'},
-  SHERELLE: {genre: 'Other'},
-  'Ship Wrek': {genre: 'House'},
-  SIDEPIECE: {genre: 'House'},
+  'AC SLATER': {genre: 'House'},
+  ACRAZE: {genre: 'Bass'},
+  ALLEYCVT: {genre: 'Trap'},
+  'ARMIN VAN BUUREN': {genre: 'Trance'},
+  AVAO: {genre: 'Trance'},
+  BUNT: {genre: 'House'},
+  CELO: {genre: 'Other'},
+  'THE CHAINSMOKERS': {genre: 'Future Bass'},
+  'CHASE & STATUS': {genre: 'Drum & Bass'},
+  'CHEYENNE GILES': {genre: 'House'},
+  CLAPTONE: {genre: 'House'},
+  'DAVE SUMMER': {genre: 'House'},
+  "DIESEL (SHAQUILLE O'NEAL)": {genre: 'Bass'},
+  'DOG EAT DOG (CRANKDAT X RIOT TEN)': {genre: 'Bass'},
+  DOMENO: {genre: 'Other'},
+  DRAEDEN: {genre: 'Other'},
+  'FERRY CORSTEN PRESENTS GOURYELLA': {genre: 'Trance'},
+  FISHER: {genre: 'House'},
+  'GANJA WHITE NIGHT': {genre: 'Bass'},
+  'GG MAGREE': {genre: 'Trap'},
+  GOODBOYS: {genre: 'House'},
+  GORILLAT: {genre: 'Other'},
+  HAIRTAGE: {genre: 'Trap'},
+  HAMRO: {genre: 'Bass'},
+  HÜGEL: {genre: 'House'},
+  'ILAN BLUESTONE': {genre: 'Trance'},
+  ILLENIUM: {genre: 'Future Bass'},
+  'IMANU B2B NITEPUNK': {genre: 'Other'},
+  ISOXO: {genre: 'Trap'},
+  'JAMES HYPE': {genre: 'House'},
+  KAYZO: {genre: 'Hardstyle'},
+  KNOCK2: {genre: 'Trap'},
+  KREAM: {genre: 'House'},
+  'KYLE WALKER': {genre: 'House'},
+  LEV3L: {genre: 'Other'},
+  LEVITY: {genre: 'Other'},
+  'LOST FREQUENCIES': {genre: 'House'},
+  'LUCAS & STEVE': {genre: 'House'},
+  MADDIX: {genre: 'Techno'},
+  'MATT SASSARI': {genre: 'Techno'},
+  'MAU P': {genre: 'House'},
+  'MAX STYLER': {genre: 'House'},
+  MEROW: {genre: 'Other'},
+  'MICHAEL SPARKS': {genre: 'House'},
+  MORTEN: {genre: 'House'},
+  'NIIKO X SWAE': {genre: 'House'},
+  'NO THANKS': {genre: 'House'},
+  NOIZU: {genre: 'House'},
+  ODDKIDOUT: {genre: 'Other'},
+  'PRETTY PINK': {genre: 'House'},
+  'RETURN OF THE JADED': {genre: 'House'},
+  'SAMMY VIRJI': {genre: 'Other'},
+  'SEVEN LIONS': {genre: 'Future Bass'},
   SLANDER: {genre: 'Trap'},
-  'Softest Hard': {genre: 'House'},
-  'Sonny Fodera': {genre: 'House'},
-  SOREN: {genre: 'Hardstyle'},
-  'Sound Rush': {genre: 'Hardstyle'},
-  'Space Laces': {genre: 'Bass'},
-  'Space Motion': {genre: 'House'},
-  'Spencer Brown': {genre: 'House'},
-  Suae: {genre: 'Hardstyle'},
-  'Sub Zero Project': {genre: 'Hardstyle'},
-  Subtronics: {genre: 'Bass'},
-  'Sullivan King B2B Kai Wachi': {genre: 'Bass'},
-  'Sullivan King': {genre: 'Bass'},
-  'Sultan + Shepard': {genre: 'House'},
-  'Svdden Death: Into The Inferno': {genre: 'Bass'},
-  'Tchami B2B AC Slater': {genre: 'House'},
-  'Things You Say': {genre: 'House'},
-  Tiësto: {genre: 'House'},
-  TOBEHONEST: {genre: 'House'},
-  'Todd Terry': {genre: 'House'},
-  'Tom & Collins': {genre: 'House'},
-  'Township Rebellion': {genre: 'Techno'},
-  Triode: {genre: 'Trance'},
-  'Tsu Nami': {genre: 'Trap'},
-  'Valentino Khan': {genre: 'House'},
-  'Vini Vici': {genre: 'Psytrance'},
-  'Warface B2B D-Sturb': {genre: 'Hardstyle'},
-  Warface: {genre: 'Hardstyle'},
-  'Wax Motif': {genre: 'House'},
-  Westend: {genre: 'House'},
-  'Will Atkinson': {genre: 'Trance'},
-  'Will Clarke': {genre: 'House'},
-  Wooli: {genre: 'Bass'},
-  'Yellow Claw': {genre: 'Trap'},
-  yetep: {genre: 'Future Bass'},
-  'Yoshi & Razner': {genre: 'Trance'},
-  Yotto: {genre: 'House'},
-  Zedd: {genre: 'House'},
-  'Zeds Dead B2B Chase & Status': {genre: 'Drum & Bass'},
+  'STEVE ANGELLO': {genre: 'House'},
+  'STEVE AOKI': {genre: 'House'},
+  SUBTRONICS: {genre: 'Bass'},
+  'TAPE B': {genre: 'Other'},
+  'TCHAMI X MALAA (NO REDEMPTION)': {genre: 'House'},
+  'VINI VICI': {genre: 'Psytrance'},
+  ZEDD: {genre: 'House'},
+  ZUBAH: {genre: 'Other'},
 };
 const genreTagMap = new Map([
   ['Bass', 'border-t-rose-700/70'],
@@ -350,7 +77,8 @@ const genreTagMap = new Map([
   ['Drum & Bass', 'border-t-neutral-700/70'],
   ['Other', 'border-t-slate-950'],
 ]);
-addEdcLineup();
+deleteV1Rankings();
+addLineup();
 addPrevRankings();
 
 const draggableConatiners = Array.from(
@@ -420,7 +148,7 @@ function getClosestSiblingToLeft(container: HTMLElement, mouseX: number, mouseY:
   return closestElement as HTMLElement | null;
 }
 
-function addEdcLineup() {
+function addLineup() {
   const fragment = document.createDocumentFragment();
   const prevRankedItems = getPrevRankedItems();
   for (const artist in artists) {
@@ -517,7 +245,7 @@ function addPrevRankings() {
 }
 
 function getSavedRankings() {
-  const prevRankings = localStorage.getItem('rankings');
+  const prevRankings = localStorage.getItem('escapade2024');
   if (prevRankings === null) {
     return {
       S: [],
@@ -532,7 +260,7 @@ function getSavedRankings() {
 }
 
 function saveRankings(data: RankingsData) {
-  localStorage.setItem('rankings', JSON.stringify(data));
+  localStorage.setItem('escapade2024', JSON.stringify(data));
   return;
 }
 
@@ -686,4 +414,8 @@ function handleTagMouseMove(item: HTMLElement, event: MouseEvent) {
 function handleTagMouseLeave(item: HTMLElement) {
   item.style.setProperty('--after-visibilty', 'hidden');
   item.style.setProperty('--after-opacity', '0');
+}
+
+function deleteV1Rankings() {
+  localStorage.removeItem('rankings');
 }
