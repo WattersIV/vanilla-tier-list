@@ -2,7 +2,7 @@ let lastClosestSiblingToRight: null | HTMLElement = null;
 let lastDragEndState: null | DragEvent = null;
 const artists: Record<string, ArtistData> = {
   'AC SLATER': {genre: 'House'},
-  ACRAZE: {genre: 'Bass'},
+  ACRAZE: {genre: 'House'},
   ALLEYCVT: {genre: 'Trap'},
   'ARMIN VAN BUUREN': {genre: 'Trance'},
   AVAO: {genre: 'Trance'},
