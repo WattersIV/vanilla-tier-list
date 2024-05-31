@@ -1,6 +1,110 @@
 let lastClosestSiblingToRight: null | HTMLElement = null;
 let lastDragEndState: null | DragEvent = null;
-const artists: Record<string, ArtistData> = {
+let selectedFestival: keyof typeof festivalInfo = 'escapade2024';
+let numberOfSelections = 0;
+const elementsArtists: Record<string, ArtistData> = {
+  'CHRIS LAKE B2B CLOONEE': {genre: 'House'},
+  EXCISION: {genre: 'Bass'},
+  ILLENIUM: {genre: 'Future Bass'},
+  'KASKADE REDUX': {genre: 'House'},
+  SLANDER: {genre: 'Trap'},
+  SUBTRONICS: {genre: 'Bass'},
+  CLOZEE: {genre: 'Bass'},
+  'THE DISCO BISCUITS': {genre: 'Other'},
+  'FLY WITH US': {genre: 'Other'},
+  'GREEN VELVET B2B PATRICK TOPPING': {genre: 'House'},
+  'LIQUID STRANGER': {genre: 'Bass'},
+  LSDREAM: {genre: 'Bass'},
+  'BARCLAY CRENSHAW': {genre: 'Bass'},
+  'THE BLESSED MADONNA': {genre: 'House'},
+  'BLOND:ISH': {genre: 'House'},
+  'BOOGIE T': {genre: 'Bass'},
+  'DESERT HEARTS': {genre: 'House'},
+  DIMENSION: {genre: 'Drum & Bass'},
+  'DISCO LINES': {genre: 'House'},
+  'DR. FRESCH': {genre: 'House'},
+  'THE FLOOZIES': {genre: 'Other'},
+  'G JONES': {genre: 'Bass'},
+  INZO: {genre: 'Future Bass'},
+  'JUSTIN MARTIN': {genre: 'House'},
+  KASABLANCA: {genre: 'Other'},
+  MATRODA: {genre: 'House'},
+  'SUB FOCUS': {genre: 'Drum & Bass'},
+  TROYBOI: {genre: 'Trap'},
+  'WALKER & ROYCE': {genre: 'House'},
+  '5AM TRIO': {genre: 'Bass'},
+  AIMMIA: {genre: 'Other'},
+  AHADADREAM: {genre: 'Other'},
+  AUSTERIA: {genre: 'Other'},
+  AZZECCA: {genre: 'House'},
+  BLANKE: {genre: 'Bass'},
+  ÆONMODE: {genre: 'Other'},
+  'BOOGIE TRIO': {genre: 'Other'},
+  CANABLISS: {genre: 'Bass'},
+  'COOL CUSTOMER': {genre: 'Other'},
+  'ELI FOLA': {genre: 'Other'},
+  FLY: {genre: 'Other'},
+  'GOLDEN PONY': {genre: 'House'},
+  HAMDI: {genre: 'Other'},
+  'THE ILLUSTRIOUS BLACKS': {genre: 'Other'},
+  'LEE REYNOLDS': {genre: 'House'},
+  LESPECIAL: {genre: 'Other'},
+  LYNY: {genre: 'Trap'},
+  MARBS: {genre: 'House'},
+  'MARVEL YEARS': {genre: 'Other'},
+  'MAX STYLER': {genre: 'House'},
+  'MIKEY LION': {genre: 'House'},
+  NHII: {genre: 'House'},
+  'NIGHT TALES': {genre: 'House'},
+  'ODD MOB & OMNOM': {genre: 'House'},
+  HYPERBEAM: {genre: 'Other'},
+  'PLAYER DAVE': {genre: 'Other'},
+  PORKY: {genre: 'Other'},
+  'ROME IN SILVER': {genre: 'Other'},
+  SAKA: {genre: 'Other'},
+  'SPACE BACON': {genre: 'Other'},
+  'SPACE WIZARD': {genre: 'Bass'},
+  'SPLINTERED SUNLIGHT': {genre: 'Other'},
+  SUNSQUABI: {genre: 'Other'},
+  'TOWNSHIP REBELLION': {genre: 'Other'},
+  TVBOO: {genre: 'Bass'},
+  VNSSA: {genre: 'House'},
+  NALA: {genre: 'Other'},
+  WRECKNO: {genre: 'Bass'},
+  ZINGARA: {genre: 'Other'},
+  '9049': {genre: 'Other'},
+  BSBO: {genre: 'Other'},
+  BENITO: {genre: 'Other'},
+  BERGER: {genre: 'Other'},
+  BEYZ: {genre: 'Other'},
+  'CUPPA T': {genre: 'Other'},
+  DCAL: {genre: 'Other'},
+  'DICE MAN': {genre: 'Other'},
+  'EARTH SIGNS': {genre: 'Other'},
+  FIRE: {genre: 'Other'},
+  HOKI: {genre: 'Other'},
+  KROOK: {genre: 'Other'},
+  LAARIS: {genre: 'Other'},
+  'LADY SHAY': {genre: 'Other'},
+  LAUNCHES: {genre: 'Other'},
+  'MAX A': {genre: 'Other'},
+  DANA: {genre: 'Other'},
+  MILAN: {genre: 'Other'},
+  MILLER: {genre: 'Other'},
+  OBA: {genre: 'Other'},
+  'FILI PAPA': {genre: 'Other'},
+  RAUDRA: {genre: 'Other'},
+  'SKY SOY YOON': {genre: 'Other'},
+  ZLATA: {genre: 'Other'},
+  'BOB MOSES CLUB SET': {genre: 'House'},
+  'SULLIVAN KING B2B KAYZO': {genre: 'Bass'},
+  'OF THE TREES': {genre: 'Bass'},
+  'SARA LANDRY': {genre: 'Techno'},
+  'TAPE B': {genre: 'Other'},
+  "IT'S MURPH": {genre: 'Other'},
+};
+
+const escaArtists: Record<string, ArtistData> = {
   'AC SLATER': {genre: 'House'},
   ACRAZE: {genre: 'House'},
   ALLEYCVT: {genre: 'Trap'},
@@ -77,23 +181,55 @@ const genreTagMap = new Map([
   ['Drum & Bass', 'border-t-neutral-700/70'],
   ['Other', 'border-t-slate-950'],
 ]);
+
+const festivalInfo = {
+  escapade2024: {
+    artists: escaArtists,
+    name: 'Escapade 2024',
+  },
+  elements2024: {
+    artists: elementsArtists,
+    name: 'Elements 2024',
+  },
+};
+
 deleteV1Rankings();
-addLineup();
-addPrevRankings();
+insertArtists();
 
-const draggableConatiners = Array.from(
-  document.querySelectorAll('.drag-container')
-) as HTMLElement[];
-const draggableItems = Array.from(document.querySelectorAll('[draggable]')) as HTMLElement[];
-
-draggableConatiners.forEach(item => {
-  item.addEventListener('dragover', handleDragover.bind(null, item));
+document.addEventListener('DOMContentLoaded', () => {
+  addDragListeners();
+  const festivalSelection = document.getElementById('festival-selection') as HTMLSelectElement;
+  festivalSelection.addEventListener('change', () => {
+    if (festivalSelection.value === selectedFestival) return;
+    selectedFestival = festivalSelection.value as keyof typeof festivalInfo;
+    removeRankings();
+    insertArtists();
+    updateTitle();
+    addDragListeners();
+  });
 });
 
-draggableItems.forEach(item => {
-  item.addEventListener('dragstart', handleDragStart.bind(null, item));
-  item.addEventListener('dragend', handleDragEnd.bind(null, item));
-});
+function addDragListeners() {
+  const draggableConatiners = Array.from(
+    document.querySelectorAll('.drag-container')
+  ) as HTMLElement[];
+  const draggableItems = Array.from(document.querySelectorAll('[draggable]')) as HTMLElement[];
+
+  draggableConatiners.forEach(item => {
+    item.addEventListener('dragover', handleDragover.bind(null, item));
+  });
+
+  draggableItems.forEach(item => {
+    item.addEventListener('dragstart', handleDragStart.bind(null, item));
+    item.addEventListener('dragend', handleDragEnd.bind(null, item));
+  });
+}
+
+function updateTitle() {
+  document.getElementById(
+    'title'
+  )!.textContent = `${festivalInfo[selectedFestival].name} Tier List`;
+}
 
 function getClosestSiblingToRight(container: HTMLElement, mouseX: number, mouseY: number) {
   const staticDraggables = Array.from(
@@ -148,11 +284,23 @@ function getClosestSiblingToLeft(container: HTMLElement, mouseX: number, mouseY:
   return closestElement as HTMLElement | null;
 }
 
+function insertArtists() {
+  addLineup();
+  addPrevRankings();
+}
+
+function removeRankings() {
+  document.querySelectorAll('.artist').forEach(item => {
+    item.remove();
+  });
+}
+
 function addLineup() {
   const fragment = document.createDocumentFragment();
   const prevRankedItems = getPrevRankedItems();
-  for (const artist in artists) {
-    const {genre} = artists[artist];
+  const artistList = festivalInfo[selectedFestival].artists;
+  for (const artist in artistList) {
+    const {genre} = artistList[artist];
     const isAlreadyRanked = prevRankedItems.includes(artist);
     if (isAlreadyRanked) {
       continue;
@@ -194,7 +342,8 @@ function addLineup() {
       'border-solid',
       'border-neutral-700',
       'border-[1px]',
-      'relative'
+      'relative',
+      'artist'
     );
     element.setAttribute('draggable', 'true');
     fragment.appendChild(element);
@@ -245,7 +394,7 @@ function addPrevRankings() {
 }
 
 function getSavedRankings() {
-  const prevRankings = localStorage.getItem('escapade2024');
+  const prevRankings = localStorage.getItem(selectedFestival);
   if (prevRankings === null) {
     return {
       S: [],
@@ -260,29 +409,26 @@ function getSavedRankings() {
 }
 
 function saveRankings(data: RankingsData) {
-  localStorage.setItem('escapade2024', JSON.stringify(data));
+  localStorage.setItem(selectedFestival, JSON.stringify(data));
   return;
 }
 
 function insertRanking(location: TierRanking, element: HTMLElement) {
   const rankings = getSavedRankings();
-  console.log('lastClosestSiblingToRight', lastClosestSiblingToRight);
   if (lastClosestSiblingToRight) {
     const position = rankings[location].indexOf(lastClosestSiblingToRight.textContent!);
-    console.log('splice at', position);
     rankings[location].splice(position, 0, element.textContent!);
   } else {
-    console.log('push');
     rankings[location].push(element.textContent!);
   }
-  console.log('saving', rankings);
   saveRankings(rankings);
 }
 
 function insertSavedRankings(location: TierRanking, data: string[]) {
   const fragment = document.createDocumentFragment();
+  const artistList = festivalInfo[selectedFestival].artists;
   data.forEach(item => {
-    const {genre} = artists[item];
+    const {genre} = artistList[item];
     const element = document.createElement('li');
     const tag = document.createElement('div');
     const pElement = document.createElement('p');
@@ -318,7 +464,8 @@ function insertSavedRankings(location: TierRanking, data: string[]) {
       'border-solid',
       'border-neutral-600',
       'border-[1px]',
-      'relative'
+      'relative',
+      'artist'
     );
     element.appendChild(pElement);
     element.appendChild(tag);
@@ -339,24 +486,12 @@ function removeRanking(location: TierRanking, item: string) {
   return;
 }
 
-function throttle(func: Function, delay: number) {
-  let lastTime = 0;
-  return function() {
-    const currentTime = new Date().getTime();
-    if (currentTime - lastTime >= delay) {
-      func.apply(null, arguments);
-      lastTime = currentTime;
-    }
-  };
-}
-
 function handleDragover(item: HTMLElement, event: DragEvent) {
   event.preventDefault();
   const draggingElement = document.querySelector('.dragging')!;
   const closestSiblingToRight = getClosestSiblingToRight(item, event.clientX, event.clientY);
   const closestSiblingToLeft = getClosestSiblingToLeft(item, event.clientX, event.clientY);
   const containerListElement = item.querySelector('ol')!;
-
   if ((event.target as HTMLElement).textContent !== draggingElement.textContent) {
     if (closestSiblingToLeft) {
       closestSiblingToLeft?.after(draggingElement);
