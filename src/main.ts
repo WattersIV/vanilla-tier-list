@@ -37,7 +37,6 @@ const elementsArtists: Record<string, ArtistData> = {
   AHADADREAM: {genre: 'Other'},
   AUSTERIA: {genre: 'Other'},
   AZZECCA: {genre: 'House'},
-  BLANKE: {genre: 'Bass'},
   ÆONMODE: {genre: 'Other'},
   'BOOGIE TRIO': {genre: 'Other'},
   CANABLISS: {genre: 'Bass'},
