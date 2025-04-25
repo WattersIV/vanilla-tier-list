@@ -94,7 +94,7 @@ const escaArtists: Record<string, ArtistData> = {
   'Loco Dice': {genre: 'Techno'},
   'Lost Frequencies': {genre: 'House'},
   'Mat Zo b2b Arty': {genre: 'Trance'},
-  Matradora: {genre: 'Techno'},
+  Matroda: {genre: 'Techno'},
   Morten: {genre: 'House'},
   'Nikita, The Wicked': {genre: 'Other'},
   Noizu: {genre: 'House'},
