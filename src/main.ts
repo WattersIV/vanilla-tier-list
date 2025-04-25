@@ -97,7 +97,6 @@ const escaArtists: Record<string, ArtistData> = {
   Matroda: {genre: 'Techno'},
   Morten: {genre: 'House'},
   'Nikita, The Wicked': {genre: 'Other'},
-  Noizu: {genre: 'House'},
   Nourey: {genre: 'Trance'},
   'Oliver Smith': {genre: 'Trance'},
   'Pineo & Loeb': {genre: 'Other'},
