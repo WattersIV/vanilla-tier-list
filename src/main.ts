@@ -1,6 +1,6 @@
 let lastClosestSiblingToRight: null | HTMLElement = null;
 let lastDragEndState: null | DragEvent = null;
-let selectedFestival: keyof typeof festivalInfo = 'escapade2025';
+let selectedFestival: keyof typeof festivalInfo = 'esca2026';
 let numberOfSelections = 0;
 const ileSoniqArtists: Record<string, ArtistData> = {
   'AK Sports': {genre: 'Techno'},
@@ -48,6 +48,61 @@ const ileSoniqArtists: Record<string, ArtistData> = {
   Katzkat: {genre: 'Other'},
   'Ludo Lacoste': {genre: 'Other'},
   Marta: {genre: 'Other'},
+};
+
+const esca2026Artists: Record<string, ArtistData> = {
+  'Alan Walker': {genre: 'Future Bass'},
+  Alleycvt: {genre: 'Bass'},
+  Avello: {genre: 'House'},
+  Chyl: {genre: 'Bass'},
+  'Cosmic Gate': {genre: 'Trance'},
+  Crankdat: {genre: 'Bass'},
+  'Danny Avila': {genre: 'House'},
+  Devault: {genre: 'Bass'},
+  'Distant Matter': {genre: 'Techno'},
+  'Disco Lines': {genre: 'House'},
+  'Disco Dom': {genre: 'House'},
+  'Dreya V': {genre: 'Techno'},
+  'Eli Brown': {genre: 'Techno'},
+  Fisher: {genre: 'House'},
+  Fovos: {genre: 'Bass'},
+  'Frank Walker': {genre: 'Future Bass'},
+  Getter: {genre: 'Bass'},
+  Griz: {genre: 'Bass'},
+  Hexxa: {genre: 'Bass'},
+  Heyz: {genre: 'Bass'},
+  'Hi-Lo': {genre: 'Techno'},
+  Hoang: {genre: 'Future Bass'},
+  'Hol!': {genre: 'Bass'},
+  Illenium: {genre: 'Future Bass'},
+  'Jackie Hollander': {genre: 'House'},
+  'Jay Pryor': {genre: 'House'},
+  Knock2: {genre: 'Bass'},
+  'Layton Giordani': {genre: 'Techno'},
+  'Loud Luxury': {genre: 'House'},
+  'Luke Alexander': {genre: 'House'},
+  Maddix: {genre: 'Techno'},
+  'Max Styler': {genre: 'House'},
+  MC4D: {genre: 'Bass'},
+  Meduza: {genre: 'House'},
+  'Micah Martin': {genre: 'Bass'},
+  MPH: {genre: 'Bass'},
+  'Nicky Romero': {genre: 'House'},
+  'Odd Mob': {genre: 'House'},
+  Okayval: {genre: 'Bass'},
+  'Oliver Heldens': {genre: 'House'},
+  'Oskar Med K': {genre: 'Techno'},
+  Roz: {genre: 'Techno'},
+  'Sam Lamar': {genre: 'House'},
+  Script: {genre: 'Techno'},
+  'Skull Machine': {genre: 'Hardcore'},
+  Slander: {genre: 'Future Bass'},
+  'Sullivan King': {genre: 'Hardcore'},
+  'Svdden Death': {genre: 'Bass'},
+  Tiësto: {genre: 'House'},
+  Viperactive: {genre: 'Techno'},
+  'Virtual Riot': {genre: 'Bass'},
+  'Walker & Royce': {genre: 'House'},
 };
 
 const escaArtists: Record<string, ArtistData> = {
@@ -133,6 +188,10 @@ const festivalInfo = {
   escapade2025: {
     artists: escaArtists,
     name: 'Escapade 2025',
+  },
+  esca2026: {
+    artists: esca2026Artists,
+    name: 'Escapade 2026',
   },
   ileSoniq2025: {
     artists: ileSoniqArtists,
