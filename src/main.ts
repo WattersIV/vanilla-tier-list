@@ -1,7 +1,7 @@
 let lastClosestSiblingToRight: null | HTMLElement = null;
 let lastDragEndState: null | DragEvent = null;
 let selectedFestival: keyof typeof festivalInfo = 'esca2026';
-let numberOfSelections = 0;
+
 const ileSoniqArtists: Record<string, ArtistData> = {
   'AK Sports': {genre: 'Techno'},
   Alesso: {genre: 'House'},
@@ -267,18 +267,19 @@ const escaArtists: Record<string, ArtistData> = {
   YDG: {genre: 'Trap'},
 };
 
-const genreTagMap = new Map([
-  ['Bass', 'border-t-rose-700/70'],
-  ['House', 'border-t-fuchsia-700/70'],
-  ['Trance', 'border-t-violet-700/70'],
-  ['Techno', 'border-t-blue-700/70'],
-  ['Hardstyle', 'border-t-cyan-700/70'],
-  ['Hardcore', 'border-t-emerald-700/70'],
-  ['Trap', 'border-t-lime-700/70'],
-  ['Future Bass', 'border-t-amber-700/70'],
-  ['Psytrance', 'border-t-red-700/70'],
-  ['Drum & Bass', 'border-t-neutral-700/70'],
-  ['Other', 'border-t-slate-950'],
+// Map genres to CSS classes
+const genreClassMap = new Map<Genre, string>([
+  ['Bass', 'genre-bass'],
+  ['House', 'genre-house'],
+  ['Trance', 'genre-trance'],
+  ['Techno', 'genre-techno'],
+  ['Hardstyle', 'genre-hardstyle'],
+  ['Hardcore', 'genre-hardcore'],
+  ['Trap', 'genre-trap'],
+  ['Future Bass', 'genre-future-bass'],
+  ['Psytrance', 'genre-psytrance'],
+  ['Drum & Bass', 'genre-dnb'],
+  ['Other', 'genre-other'],
 ]);
 
 const festivalInfo = {
@@ -309,6 +310,9 @@ insertArtists();
 
 document.addEventListener('DOMContentLoaded', () => {
   addDragListeners();
+  setupLegendToggle();
+  updateUnrankedCount();
+
   const festivalSelection = document.getElementById('festival-selection') as HTMLSelectElement;
   festivalSelection.addEventListener('change', () => {
     if (festivalSelection.value === selectedFestival) return;
@@ -317,23 +321,67 @@ document.addEventListener('DOMContentLoaded', () => {
     insertArtists();
     updateTitle();
     addDragListeners();
+    updateUnrankedCount();
   });
 });
 
+function setupLegendToggle() {
+  const toggleBtn = document.getElementById('toggle-legend');
+  const legend = document.getElementById('genre-legend');
+  const toggleText = document.getElementById('legend-toggle-text');
+
+  if (toggleBtn && legend && toggleText) {
+    toggleBtn.addEventListener('click', () => {
+      const isHidden = legend.classList.contains('hidden');
+      legend.classList.toggle('hidden');
+      toggleText.textContent = isHidden ? 'Hide Legend' : 'Show Legend';
+    });
+  }
+}
+
+function updateUnrankedCount() {
+  const container = document.getElementById('starting-container');
+  const countEl = document.getElementById('unranked-count');
+  if (container && countEl) {
+    const count = container.querySelectorAll('.artist').length;
+    countEl.textContent = `(${count})`;
+  }
+}
+
 function addDragListeners() {
-  const draggableConatiners = Array.from(
+  const draggableContainers = Array.from(
     document.querySelectorAll('.drag-container')
   ) as HTMLElement[];
   const draggableItems = Array.from(document.querySelectorAll('[draggable]')) as HTMLElement[];
 
-  draggableConatiners.forEach(item => {
+  draggableContainers.forEach(item => {
     item.addEventListener('dragover', handleDragover.bind(null, item));
+    item.addEventListener('dragenter', handleDragEnter.bind(null, item));
+    item.addEventListener('dragleave', handleDragLeave.bind(null, item));
+    item.addEventListener('drop', handleDrop.bind(null, item));
   });
 
   draggableItems.forEach(item => {
     item.addEventListener('dragstart', handleDragStart.bind(null, item));
     item.addEventListener('dragend', handleDragEnd.bind(null, item));
   });
+}
+
+function handleDragEnter(container: HTMLElement, event: DragEvent) {
+  event.preventDefault();
+  container.classList.add('drag-over');
+}
+
+function handleDragLeave(container: HTMLElement, event: DragEvent) {
+  const relatedTarget = event.relatedTarget as HTMLElement | null;
+  if (!container.contains(relatedTarget)) {
+    container.classList.remove('drag-over');
+  }
+}
+
+function handleDrop(container: HTMLElement, _event: DragEvent) {
+  container.classList.remove('drag-over');
+  updateUnrankedCount();
 }
 
 function updateTitle() {
@@ -406,57 +454,41 @@ function removeRankings() {
   });
 }
 
+function createArtistElement(artist: string, genre: Genre): HTMLLIElement {
+  const element = document.createElement('li');
+  const tag = document.createElement('div');
+  const pElement = document.createElement('p');
+
+  pElement.textContent = artist;
+
+  const genreClass = genreClassMap.get(genre) ?? 'genre-other';
+  tag.classList.add('tag', genreClass, 'tooltip');
+  tag.dataset.tooltip = genre;
+  tag.style.setProperty('--after-visibility', 'hidden');
+  tag.style.setProperty('--after-opacity', '0');
+  tag.addEventListener('mouseenter', handleTagMouseEnter.bind(null, tag));
+  tag.addEventListener('mouseleave', handleTagMouseLeave.bind(null, tag));
+
+  element.classList.add('artist');
+  element.appendChild(pElement);
+  element.appendChild(tag);
+  element.setAttribute('draggable', 'true');
+
+  return element;
+}
+
 function addLineup() {
   const fragment = document.createDocumentFragment();
   const prevRankedItems = getPrevRankedItems();
   const artistList = festivalInfo[selectedFestival].artists;
+
   for (const artist in artistList) {
     const {genre} = artistList[artist];
     const isAlreadyRanked = prevRankedItems.includes(artist);
     if (isAlreadyRanked) {
       continue;
     }
-    const element = document.createElement('li');
-    const tag = document.createElement('div');
-    const tagColor = genreTagMap.get(genre) ?? '';
-    tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
-    tag.dataset.tooltip = genre;
-    tag.style.setProperty('--after-visibilty', 'hidden');
-    tag.style.setProperty('--after-opacity', '0');
-    tag.addEventListener('mousemove', handleTagMouseMove.bind(null, tag));
-    tag.addEventListener('mouseleave', handleTagMouseLeave.bind(null, tag));
-    const pElement = document.createElement('p');
-    pElement.textContent = artist;
-    element.appendChild(pElement);
-    element.appendChild(tag);
-
-    pElement.classList.add(
-      'overflow-hidden',
-      'hover:overflow-auto',
-      'w-full',
-      'h-full',
-      'scrollbar',
-      'scrollbar-thumb-neutral-400',
-      'scrollbar-thumb-rounded-lg',
-      'scrollbar-h-1',
-      'scrollbar-w-1',
-      'text-center',
-      'grid',
-      'items-center',
-      'absolute'
-    );
-    element.classList.add(
-      'h-24',
-      'w-24',
-      'flex',
-      'bg-neutral-300/50',
-      'border-solid',
-      'border-neutral-700',
-      'border-[1px]',
-      'relative',
-      'artist'
-    );
-    element.setAttribute('draggable', 'true');
+    const element = createArtistElement(artist, genre);
     fragment.appendChild(element);
   }
   document.getElementById('starting-container')?.appendChild(fragment);
@@ -464,13 +496,12 @@ function addLineup() {
 
 function getPrevRankedItems() {
   const savedRankings = getSavedRankings();
-  const rankedItems = [];
+  const rankedItems: string[] = [];
   for (const key in savedRankings) {
     for (const item of savedRankings[key]) {
       rankedItems.push(item);
     }
   }
-
   return rankedItems;
 }
 
@@ -478,6 +509,7 @@ type TierRanking = 'S' | 'A' | 'B' | 'C' | 'F' | 'Dont Know';
 type RankingsData = {
   [key: TierRanking[number]]: string[];
 };
+
 const genres = [
   'Bass',
   'House',
@@ -491,7 +523,7 @@ const genres = [
   'Other',
   'Drum & Bass',
 ] as const;
-type Genre = typeof genres[number];
+type Genre = (typeof genres)[number];
 type ArtistData = {
   genre: Genre;
 };
@@ -521,7 +553,6 @@ function getSavedRankings() {
 
 function saveRankings(data: RankingsData) {
   localStorage.setItem(selectedFestival, JSON.stringify(data));
-  return;
 }
 
 function insertRanking(location: TierRanking, element: HTMLElement) {
@@ -538,52 +569,14 @@ function insertRanking(location: TierRanking, element: HTMLElement) {
 function insertSavedRankings(location: TierRanking, data: string[]) {
   const fragment = document.createDocumentFragment();
   const artistList = festivalInfo[selectedFestival].artists;
+
   data.forEach(item => {
     const {genre} = artistList[item];
-    const element = document.createElement('li');
-    const tag = document.createElement('div');
-    const pElement = document.createElement('p');
-    pElement.textContent = item;
-
-    const tagColor = genreTagMap.get(genre) ?? '';
-    tag.classList.add('tag', 'border-opacity-75', tagColor, 'border-t-[30px]', 'tooltip');
-    tag.dataset.tooltip = genre;
-    tag.style.setProperty('--after-visibilty', 'hidden');
-    tag.style.setProperty('--after-opacity', '0');
-    tag.addEventListener('mousemove', handleTagMouseMove.bind(null, tag));
-    tag.addEventListener('mouseleave', handleTagMouseLeave.bind(null, tag));
-    pElement.classList.add(
-      'overflow-hidden',
-      'hover:overflow-auto',
-      'w-full',
-      'h-full',
-      'scrollbar',
-      'scrollbar-thumb-neutral-400',
-      'scrollbar-thumb-rounded-lg',
-      'scrollbar-h-1',
-      'scrollbar-w-1',
-      'text-center',
-      'grid',
-      'items-center',
-      'absolute'
-    );
-    element.classList.add(
-      'h-24',
-      'w-24',
-      'flex',
-      'bg-neutral-300/50',
-      'border-solid',
-      'border-neutral-600',
-      'border-[1px]',
-      'relative',
-      'artist'
-    );
-    element.appendChild(pElement);
-    element.appendChild(tag);
-    element.setAttribute('draggable', 'true');
+    const element = createArtistElement(item, genre);
     element.dataset.ranking = location;
     fragment.appendChild(element);
   });
+
   document.getElementById(location)?.appendChild(fragment);
 }
 
@@ -594,7 +587,6 @@ function removeRanking(location: TierRanking, item: string) {
     rankings[location].splice(index, 1);
   }
   saveRankings(rankings);
-  return;
 }
 
 function handleDragover(item: HTMLElement, event: DragEvent) {
@@ -615,7 +607,7 @@ function handleDragover(item: HTMLElement, event: DragEvent) {
 }
 
 function handleDragStart(item: HTMLElement, event: DragEvent) {
-  item.classList.add('dragging', 'opacity-50');
+  item.classList.add('dragging');
   const path = event.composedPath() as HTMLElement[];
   for (const element of path) {
     if (element.tagName === 'OL' && element.id !== 'starting-container') {
@@ -629,7 +621,13 @@ function handleDragStart(item: HTMLElement, event: DragEvent) {
 }
 
 function handleDragEnd(item: HTMLElement, event: DragEvent) {
-  item.classList.remove('dragging', 'opacity-50');
+  item.classList.remove('dragging');
+
+  // Remove drag-over from all containers
+  document.querySelectorAll('.drag-container').forEach(container => {
+    container.classList.remove('drag-over');
+  });
+
   if (lastDragEndState !== event) {
     const path = event.composedPath() as HTMLElement[];
     let selectedRank;
@@ -643,22 +641,16 @@ function handleDragEnd(item: HTMLElement, event: DragEvent) {
     }
     lastDragEndState = event;
   }
+  updateUnrankedCount();
 }
 
-function handleTagMouseMove(item: HTMLElement, event: MouseEvent) {
-  const mouseX = event.offsetX;
-  const mouseY = event.offsetY;
-  if (Math.abs(mouseY) >= Math.abs(mouseX)) {
-    item.style.setProperty('--after-visibilty', 'visible');
-    item.style.setProperty('--after-opacity', '1');
-  } else {
-    item.style.setProperty('--after-visibilty', 'hidden');
-    item.style.setProperty('--after-opacity', '0');
-  }
+function handleTagMouseEnter(item: HTMLElement) {
+  item.style.setProperty('--after-visibility', 'visible');
+  item.style.setProperty('--after-opacity', '1');
 }
 
 function handleTagMouseLeave(item: HTMLElement) {
-  item.style.setProperty('--after-visibilty', 'hidden');
+  item.style.setProperty('--after-visibility', 'hidden');
   item.style.setProperty('--after-opacity', '0');
 }
 
